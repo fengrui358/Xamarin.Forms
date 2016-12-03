@@ -214,7 +214,15 @@ namespace Xamarin.Forms
 			{
 				using (var client = GetHttpClient())
 				using (var response = await client.GetAsync(uri, cancellationToken))
-					return await response.Content.ReadAsStreamAsync();
+				{
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        Log.Warning("HTTP Request", $"Could not retrieve {uri}, status code {response.StatusCode}");
+                        return null;
+                    }
+
+                    return await response.Content.ReadAsStreamAsync();
+                }
 			}
 
 			public IIsolatedStorageFile GetUserStoreForApplication()
